@@ -1,0 +1,21 @@
+# === Python / Flask ===
+*.pyc
+*.pyo
+__pycache__/
+*.env
+.env
+*.log
+venv/
+backend/__pycache__/
+backend/migrations/__pycache__/
+
+# === Node / Vite (Frontend) ===
+node_modules/
+dist/
+build/
+frontend/node_modules/
+frontend/dist/
+
+# === OS/System files ===
+.DS_Store
+Thumbs.db
