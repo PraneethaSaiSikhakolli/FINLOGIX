@@ -15,5 +15,6 @@ class Config:
     JWT_TOKEN_LOCATION = ['headers', 'cookies']
     JWT_COOKIE_CSRF_PROTECT = False
     JWT_COOKIE_SECURE = False  
+    MAX_CONTENT_LENGTH = 10 * 1024 * 1024  
     JWT_REFRESH_COOKIE_PATH = "/auth/refresh"
 
