@@ -37,6 +37,11 @@ def create_app():
     def serve_audio(filename):
         return send_from_directory('static/uploads', filename, mimetype='audio/webm')
 
+    @app.route("/", strict_slashes=False)
+    def home():
+        return "✅ Welcome to FinLogix Backend!"
+
+
 
     # Safe category seeding
     from .models import Category
