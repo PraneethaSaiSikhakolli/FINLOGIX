@@ -11,7 +11,9 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import MetricCard from '../components/MetricCard';
 import AdviceModal from '../components/AdviceModal';
-import { FaWallet, FaArrowUp, FaArrowDown, FaPiggyBank, FaRobot, FaBars } from 'react-icons/fa';
+import {
+  FaWallet, FaArrowUp, FaArrowDown, FaPiggyBank, FaRobot, FaBars
+} from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -31,7 +33,7 @@ const Dashboard = () => {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [flashMsg, setFlashMsg] = useState('');
   const [flashType, setFlashType] = useState<'success' | 'error'>('success');
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false); // ← mobile toggle
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -119,8 +121,8 @@ const Dashboard = () => {
     <div className="min-h-screen font-[Poppins] bg-gradient-to-br from-white to-teal-100 flex flex-col">
       <Navbar />
 
-      {/* Mobile sidebar toggle button */}
-      <div className="md:hidden fixed top-16 left-4 z-30">
+      {/* Mobile toggle button */}
+      <div className="md:hidden fixed top-16 left-4 z-50">
         <button
           onClick={() => setIsMobileSidebarOpen(true)}
           className="text-teal-800 bg-white p-2 rounded-full shadow-md"
@@ -129,27 +131,31 @@ const Dashboard = () => {
         </button>
       </div>
 
+      {/* Mobile Sidebar */}
+      {isMobileSidebarOpen && (
+        <div className="fixed inset-0 z-40 flex">
+          <div
+            className="absolute inset-0 bg-black opacity-50"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
+          <div className="relative z-50 w-56 min-w-[220px] h-screen">
+            <Sidebar
+              onTabChange={(tab) => {
+                setActiveTab(tab);
+                setIsMobileSidebarOpen(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-1 overflow-hidden pt-16">
-        {/* Desktop sidebar */}
+        {/* Desktop Sidebar */}
         <div className="hidden md:block w-56 min-w-[220px]">
           <Sidebar onTabChange={(tab) => setActiveTab(tab)} />
         </div>
 
-        {/* Mobile sidebar */}
-        {isMobileSidebarOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setIsMobileSidebarOpen(false)}>
-            <div className="fixed top-16 left-0 z-50 h-full w-56 bg-teal-800 shadow-lg">
-              <Sidebar
-                onTabChange={(tab) => {
-                  setActiveTab(tab);
-                  setIsMobileSidebarOpen(false);
-                }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Main content */}
+        {/* Main Content */}
         <main className="flex-1 px-4 md:px-8 py-6 overflow-y-auto">
           <motion.h1
             className="text-3xl font-bold text-teal-700 mb-6"

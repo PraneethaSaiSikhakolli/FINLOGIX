@@ -42,7 +42,6 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
   const now = dayjs();
-
   const filteredData = data.filter(item => {
     const txnDate = dayjs(item.timestamp);
     const isTypeMatch = filter === 'all' || item.type === filter;
@@ -62,10 +61,6 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
       return true;
     }
   });
-     const commonAnimation: ChartOptions['animation'] = {
-    duration: 800,
-    easing: 'easeInOutCubic',
-  };
 
   const totals: { [key: string]: number } = {};
   filteredData.forEach(item => {
@@ -81,8 +76,8 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
           filter === 'income'
             ? 'Income by Category'
             : filter === 'expense'
-            ? 'Expenses by Category'
-            : 'All Transactions by Category',
+              ? 'Expenses by Category'
+              : 'All Transactions by Category',
         data: Object.values(totals),
         backgroundColor: [
           '#f9a8d4', '#fcd34d', '#a5f3fc', '#c4b5fd', '#6ee7b7',
@@ -94,6 +89,10 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
     ],
   };
 
+  const commonAnimation: ChartOptions['animation'] = {
+    duration: 800,
+    easing: 'easeInOutCubic',
+  };
 
   const barOptions: ChartOptions<'bar'> = {
     maintainAspectRatio: false,
@@ -141,7 +140,6 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
     if (bar) {
       fetch(bar).then(res => res.blob()).then(blob => saveAs(blob, 'bar_chart.png'));
     }
-
     if (pie) {
       fetch(pie).then(res => res.blob()).then(blob => saveAs(blob, 'pie_chart.png'));
     }
@@ -164,24 +162,29 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-800 p-4 mt-6 rounded-lg shadow" ref={chartContainerRef}>
-      <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
-        <div className="space-x-2">
+    <div ref={chartContainerRef} className="bg-white dark:bg-zinc-800 p-4 mt-6 rounded-lg shadow">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+        <div className="flex flex-wrap gap-2">
           {['all', 'income', 'expense'].map((type) => (
             <button
               key={type}
-              onClick={() => setFilter(type as 'all' | 'income' | 'expense')}
-              className={`px-3 py-1 rounded ${filter === type ? 'bg-gray-800 text-white' : 'bg-gray-200 dark:bg-zinc-700'}`}
+              onClick={() => setFilter(type as any)}
+              className={`px-3 py-1 rounded text-sm ${
+                filter === type
+                  ? 'bg-gray-800 text-white'
+                  : 'bg-gray-200 dark:bg-zinc-700'
+              }`}
             >
               {type.charAt(0).toUpperCase() + type.slice(1)}
             </button>
           ))}
         </div>
-        <div className="flex gap-2 items-center flex-wrap relative">
+
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <select
             value={timeFilter}
             onChange={(e) => setTimeFilter(e.target.value as any)}
-            className="border px-2 py-1 rounded dark:bg-zinc-700"
+            className="border px-2 py-1 rounded text-sm dark:bg-zinc-700"
           >
             <option value="month">This Month</option>
             <option value="week">Last 7 Days</option>
@@ -191,20 +194,30 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
 
           {timeFilter === 'custom' && (
             <>
-              <input type="date" value={customStart} onChange={(e) => setCustomStart(e.target.value)} className="border px-2 py-1 rounded dark:bg-zinc-700" />
-              <input type="date" value={customEnd} onChange={(e) => setCustomEnd(e.target.value)} className="border px-2 py-1 rounded dark:bg-zinc-700" />
+              <input
+                type="date"
+                value={customStart}
+                onChange={(e) => setCustomStart(e.target.value)}
+                className="border px-2 py-1 rounded text-sm dark:bg-zinc-700"
+              />
+              <input
+                type="date"
+                value={customEnd}
+                onChange={(e) => setCustomEnd(e.target.value)}
+                className="border px-2 py-1 rounded text-sm dark:bg-zinc-700"
+              />
             </>
           )}
 
           <div className="relative">
             <button
               onClick={() => setShowDropdown((prev) => !prev)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
             >
               Download
             </button>
             {showDropdown && (
-              <div className="absolute right-0 top-10 bg-white dark:bg-zinc-700 border rounded shadow z-10 w-48">
+              <div className="absolute right-0 top-10 bg-white dark:bg-zinc-700 border rounded shadow z-10 w-48 text-sm">
                 <button onClick={downloadCSV} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-600 w-full text-left">Export Data (CSV)</button>
                 <button onClick={downloadPNG} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-600 w-full text-left">Export Charts (PNG)</button>
                 <button onClick={downloadPDF} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-zinc-600 w-full text-left">Export Report (PDF)</button>
@@ -221,11 +234,11 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
           No data for this filter and date range.
         </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px]">
-          <div className="h-[300px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="h-[300px] w-full">
             <Bar ref={barRef} data={chartData} options={barOptions} />
           </div>
-          <div className="h-[300px]">
+          <div className="h-[300px] w-full">
             <Pie ref={pieRef} data={chartData} options={pieOptions} />
           </div>
         </div>

@@ -3,8 +3,7 @@ import { useEffect, useState } from 'react';
 import API from '../../services/axiosInstance';
 import {
   PieChart, Pie, Cell,
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  Sector
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Sector
 } from 'recharts';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
@@ -92,7 +91,7 @@ const CategoryStats = () => {
       .catch(() => {
         toast.error('Failed to load category analytics');
       })
-      .finally(()=>{
+      .finally(() => {
         setLoading(false);
       });
   }, []);
@@ -110,12 +109,12 @@ const CategoryStats = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="space-y-10 max-w-6xl mx-auto p-4"
+      className="space-y-10 max-w-7xl mx-auto p-4 md:p-6"
     >
       {summary && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
           <motion.div
-            className="bg-[#FFF8F6] text-[#2A2A2A] p-5 rounded-xl shadow-md"
+            className="bg-[#FFF8F6] text-[#2A2A2A] p-4 rounded-xl shadow"
             whileHover={{ scale: 1.03 }}
           >
             <h3 className="text-sm flex items-center gap-2 font-semibold">
@@ -124,21 +123,17 @@ const CategoryStats = () => {
             <p className="text-xl font-bold mt-2">{summary.top_category}</p>
           </motion.div>
           <motion.div
-            className="bg-[#FFF8F6] text-[#2A2A2A] p-5 rounded-xl shadow-md"
+            className="bg-[#FFF8F6] text-[#2A2A2A] p-4 rounded-xl shadow"
             whileHover={{ scale: 1.03 }}
           >
-            <h3 className="text-sm flex items-center gap-2 font-semibold">
-              💸 Total Spent
-            </h3>
+            <h3 className="text-sm font-semibold">💸 Total Spent</h3>
             <p className="text-xl font-bold mt-2">₹{summary.total_spent.toLocaleString()}</p>
           </motion.div>
           <motion.div
-            className="bg-[#FFF8F6] text-[#2A2A2A] p-5 rounded-xl shadow-md"
+            className="bg-[#FFF8F6] text-[#2A2A2A] p-4 rounded-xl shadow"
             whileHover={{ scale: 1.03 }}
           >
-            <h3 className="text-sm flex items-center gap-2 font-semibold">
-              🔄 Total Transactions
-            </h3>
+            <h3 className="text-sm font-semibold">🔄 Total Transactions</h3>
             <p className="text-xl font-bold mt-2">{summary.total_transactions}</p>
           </motion.div>
         </div>
@@ -146,80 +141,85 @@ const CategoryStats = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <motion.div
-          className="bg-white rounded-2xl shadow-md p-5 border border-[#F9ECE8]"
+          className="bg-white rounded-2xl shadow p-4 border border-[#F9ECE8]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h2 className="text-lg font-semibold text-[#2A2A2A] mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <FaChartPie /> Category Usage
           </h2>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                animationDuration={400}
-                activeShape={renderActiveShape}
-                data={data}
-                dataKey="transactions"
-                nameKey="category"
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                onMouseEnter={(_, index) => setActiveIndex(index)}
-                onMouseLeave={() => setActiveIndex(undefined)}
-              >
-                {data.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                    stroke={index === activeIndex ? '#333' : undefined}
-                    strokeWidth={index === activeIndex ? 2 : 1}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          <div className="w-full h-[250px] overflow-x-auto">
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  activeShape={renderActiveShape}
+                  data={data}
+                  dataKey="transactions"
+                  nameKey="category"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  onMouseEnter={(_, index) => setActiveIndex(index)}
+                  onMouseLeave={() => setActiveIndex(undefined)}
+                >
+                  {data.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                      stroke={index === activeIndex ? '#333' : undefined}
+                      strokeWidth={index === activeIndex ? 2 : 1}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </motion.div>
 
         <motion.div
-          className="bg-white rounded-2xl shadow-md p-5 border border-[#F9ECE8]"
+          className="bg-white rounded-2xl shadow p-4 border border-[#F9ECE8]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h2 className="text-lg font-semibold text-[#2A2A2A] mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
             <FaChartBar /> Transactions per Category
           </h2>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={data} barSize={30}>
-              <XAxis dataKey="category" stroke="#666" />
-              <YAxis stroke="#666" />
-              <Tooltip />
-              <Bar dataKey="transactions" fill="#FFAAA5" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="w-full h-[250px] overflow-x-auto">
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={data} barSize={30}>
+                <XAxis dataKey="category" stroke="#666" />
+                <YAxis stroke="#666" />
+                <Tooltip />
+                <Bar dataKey="transactions" fill="#FFAAA5" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </motion.div>
       </div>
 
       <motion.div
-        className="bg-white rounded-2xl shadow-md p-5 border border-[#F9ECE8]"
+        className="bg-white rounded-2xl shadow p-4 border border-[#F9ECE8]"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <h2 className="text-lg font-semibold text-[#2A2A2A] mb-4 flex items-center gap-2">
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <FaBalanceScale /> Income vs Expense by Category
         </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={breakdown} barSize={30}>
-            <XAxis dataKey="category" stroke="#666" />
-            <YAxis stroke="#666" />
-            <Tooltip />
-            <Bar dataKey="income" fill="#DCE775" name="Income" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="expense" fill="#FF8C94" name="Expense" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+        <div className="w-full h-[300px] overflow-x-auto">
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={breakdown} barSize={30}>
+              <XAxis dataKey="category" stroke="#666" />
+              <YAxis stroke="#666" />
+              <Tooltip />
+              <Bar dataKey="income" fill="#DCE775" name="Income" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="expense" fill="#FF8C94" name="Expense" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </motion.div>
     </motion.div>
   );
