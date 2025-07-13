@@ -8,14 +8,16 @@ import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
 import FlashMessage from '../components/FlashMessage';
 import Chart from '../components/Chart';
 import Navbar from '../components/Navbar';
+import Sidebar from '../components/Sidebar';
 import MetricCard from '../components/MetricCard';
 import AdviceModal from '../components/AdviceModal';
 import { FaWallet, FaArrowUp, FaArrowDown, FaPiggyBank, FaRobot } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-
-type TabType = 'income' | 'expense' | 'charts';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Dashboard = () => {
+  type TabType = 'income' | 'expense' | 'charts';
+
   const [transactions, setTransactions] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [editingTxn, setEditingTxn] = useState<any | null>(null);
@@ -34,7 +36,6 @@ const Dashboard = () => {
     fetchData();
     fetchCategories();
   }, []);
-
 
   const fetchCategories = async () => {
     try {
@@ -99,90 +100,132 @@ const Dashboard = () => {
     }
   };
 
+  const handleTransactionAdded = () => {
+    setIsModalOpen(false);
+    fetchData();
+    setFlashMsg(`${activeTab} added successfully`);
+    setFlashType('success');
+  };
+
+  const handleTransactionUpdated = () => {
+    setEditingTxn(null);
+    fetchData();
+    setFlashMsg(`${activeTab} updated successfully`);
+    setFlashType('success');
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-zinc-900 px-4 sm:px-6">
+    <div className="min-h-screen font-[Poppins] bg-gradient-to-br from-white to-teal-100 flex flex-col">
       <Navbar />
-      <div className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <MetricCard title="Total Balance" value={balance} icon={<FaWallet />} color="blue" />
-          <MetricCard title="Monthly Income" value={monthlyIncome} icon={<FaArrowUp />} color="green" />
-          <MetricCard title="Monthly Expenses" value={monthlyExpenses} icon={<FaArrowDown />} color="red" />
-          <MetricCard title="Savings This Month" value={monthlyIncome - monthlyExpenses} icon={<FaPiggyBank />} color="gray" />
+      <div className="flex flex-1 overflow-hidden pt-16">
+        <div className="w-56 min-w-[220px] hidden md:block h-full">
+          <Sidebar onTabChange={(tab) => setActiveTab(tab)} />
         </div>
 
-        <div className="flex justify-center mt-6 space-x-4">
-          {['income', 'expense', 'charts'].map((tab) => (
-            <button key={tab}
-              className={`px-4 py-2 rounded font-semibold text-white shadow ${activeTab === tab ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-gray-600'}`}
-              onClick={() => setActiveTab(tab as TabType)}
-            >
-              {tab.toUpperCase()}
-            </button>
-          ))}
-        </div>
+        <main className="flex-1 px-4 md:px-8 py-6 overflow-y-auto">
+          <motion.h1
+            className="text-3xl font-bold text-teal-700 mb-6"
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            Welcome back 👋
+          </motion.h1>
 
-        {(activeTab === 'income' || activeTab === 'expense') && (
-          <div className="flex justify-center mt-6">
-            <button className={`px-4 py-2 rounded-md font-semibold shadow text-white ${activeTab === 'income' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-red-600 hover:bg-red-700'}`} onClick={() => setIsModalOpen(true)}>
-              + Add {activeTab}
-            </button>
-          </div>
-        )}
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <MetricCard title="Total Balance" value={balance} icon={<FaWallet />} color="teal" />
+            <MetricCard title="Monthly Income" value={monthlyIncome} icon={<FaArrowUp />} color="green" />
+            <MetricCard title="Monthly Expenses" value={monthlyExpenses} icon={<FaArrowDown />} color="red" />
+            <MetricCard title="Savings This Month" value={monthlyIncome - monthlyExpenses} icon={<FaPiggyBank />} color="gray" />
+          </motion.div>
 
-        <div className="mt-6">
+          {(activeTab === 'income' || activeTab === 'expense') && (
+            <div className="flex justify-end mb-6">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-xl font-medium shadow-lg transition-all"
+                onClick={() => setIsModalOpen(true)}
+              >
+                + Add {activeTab}
+              </motion.button>
+            </div>
+          )}
+
           {(activeTab === 'income' || activeTab === 'expense') && (
             <>
               <TransactionList
                 transactions={transactions.filter(t => t.type === activeTab)}
-                onEdit={(txn) => setEditingTxn(txn)}
+                onEdit={setEditingTxn}
                 onDelete={handleDelete}
                 onUpdated={fetchData}
               />
+
               <TransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <TransactionForm
-                  onAdd={() => {
-                    setIsModalOpen(false);
-                    fetchData();
-                  }}
+                  onAdd={handleTransactionAdded}
                   categories={categories}
                   defaultType={activeTab}
                 />
               </TransactionModal>
+
               <EditTransactionModal
                 isOpen={!!editingTxn}
                 onClose={() => setEditingTxn(null)}
-                onUpdated={fetchData}
+                onUpdated={handleTransactionUpdated}
                 transaction={editingTxn}
                 categories={categories}
               />
             </>
           )}
+
           {activeTab === 'charts' && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Charts & Analysis</h2>
-                <button
+            <motion.div
+              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-semibold">Charts & Analysis</h2>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
                   onClick={() => setShowAdviceModal(true)}
-                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow"
+                  className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg shadow-md transition"
                 >
-                  <FaRobot />
-                  Get Budget Advice
-                </button>
+                  <FaRobot /> Get Budget Advice
+                </motion.button>
               </div>
               <Chart data={transactions} />
-            </div>
+            </motion.div>
           )}
-        </div>
 
-        <DeleteConfirmationModal
-          isOpen={showDeleteModal}
-          onClose={() => setShowDeleteModal(false)}
-          onConfirm={handleConfirmDelete}
-        />
-        {flashMsg && (
-          <FlashMessage message={flashMsg} type={flashType} onClose={() => setFlashMsg('')} />
-        )}
-        <AdviceModal isOpen={showAdviceModal} onClose={() => setShowAdviceModal(false)} />
+          <DeleteConfirmationModal
+            isOpen={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            onConfirm={handleConfirmDelete}
+          />
+
+          <AnimatePresence>
+            {flashMsg && (
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 20, opacity: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                <FlashMessage message={flashMsg} type={flashType} onClose={() => setFlashMsg('')} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AdviceModal isOpen={showAdviceModal} onClose={() => setShowAdviceModal(false)} />
+        </main>
       </div>
     </div>
   );

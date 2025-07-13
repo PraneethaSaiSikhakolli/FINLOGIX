@@ -1,7 +1,13 @@
-// src/pages/Profile.tsx
 import { useEffect, useState } from 'react';
 import API from '../services/axiosInstance';
-import { FaEnvelope, FaUserShield, FaUserCircle, FaKey, FaEye, FaEyeSlash } from 'react-icons/fa';
+import {
+  FaEnvelope,
+  FaUserShield,
+  FaUserCircle,
+  FaKey,
+  FaEye,
+  FaEyeSlash,
+} from 'react-icons/fa';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { toast } from 'react-toastify';
 
@@ -21,9 +27,9 @@ const Profile = () => {
 
   useEffect(() => {
     API.get('/user/user-details')
-      .then(res => setUser(res.data))
+      .then((res) => setUser(res.data))
       .catch(() => {
-        toast.error("Failed to fetch user details.");
+        toast.error('Failed to fetch user details.');
         setUser(null);
       })
       .finally(() => setLoading(false));
@@ -31,7 +37,7 @@ const Profile = () => {
 
   const handlePasswordChange = async () => {
     if (!oldPassword || !newPassword) {
-      toast.error("Please fill out both fields.");
+      toast.error('Please fill out both fields.');
       return;
     }
 
@@ -41,18 +47,19 @@ const Profile = () => {
         new_password: newPassword,
       });
 
-      toast.success("Password changed successfully ✅");
+      toast.success('Password changed successfully ✅');
       setShowChangePassword(false);
       setOldPassword('');
       setNewPassword('');
     } catch (err: any) {
       const status = err?.response?.status;
-      const message = err?.response?.data?.error || "An unexpected error occurred";
+      const message =
+        err?.response?.data?.error || 'An unexpected error occurred';
 
       if (status === 401) {
-        toast.error("Incorrect current password 🔐");
+        toast.error('Incorrect current password 🔐');
       } else if (status === 400) {
-        toast.error("Invalid new password. Please use a strong one.");
+        toast.error('Invalid new password. Please use a strong one.');
       } else {
         toast.error(`Error: ${message}`);
       }
@@ -62,7 +69,7 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[300px]">
-        <ClipLoader color="#6366F1" size={40} />
+        <ClipLoader color="#0f766e" size={40} />
       </div>
     );
   }
@@ -76,84 +83,86 @@ const Profile = () => {
   }
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-xl shadow border border-gray-100">
+    <div className="max-w-xl mx-auto mt-20 p-6 bg-white rounded-xl shadow-md border border-gray-100">
       <div className="flex items-center gap-4 mb-6">
-        <FaUserCircle className="text-4xl text-indigo-500" />
+        <FaUserCircle className="text-4xl text-teal-600" />
         <h2 className="text-2xl font-bold text-gray-800">My Profile</h2>
       </div>
 
       <div className="space-y-4 mb-6">
         <div className="flex items-center gap-3">
-          <FaEnvelope className="text-indigo-500" />
-          <p className="text-gray-700"><strong>Email:</strong> {user.email}</p>
+          <FaEnvelope className="text-teal-600" />
+          <p className="text-gray-700">
+            <strong>Email:</strong> {user.email}
+          </p>
         </div>
         <div className="flex items-center gap-3">
-          <FaUserShield className="text-indigo-500" />
-          <p className="text-gray-700"><strong>Role:</strong> {user.role}</p>
+          <FaUserShield className="text-teal-600" />
+          <p className="text-gray-700">
+            <strong>Role:</strong> {user.role}
+          </p>
         </div>
       </div>
 
-      <div className="mt-4">
-        {!showChangePassword ? (
-          <button
-            onClick={() => setShowChangePassword(true)}
-            className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center gap-2"
-          >
-            <FaKey /> Change Password
-          </button>
-        ) : (
-          <div className="space-y-4">
-            <div className="relative">
-              <input
-                type={showOld ? "text" : "password"}
-                placeholder="Current Password"
-                value={oldPassword}
-                onChange={(e) => setOldPassword(e.target.value)}
-                className="w-full px-4 py-2 border rounded pr-10"
-              />
-              <span
-                onClick={() => setShowOld(!showOld)}
-                className="absolute right-3 top-2.5 text-gray-500 cursor-pointer"
-              >
-                {showOld ? <FaEyeSlash /> : <FaEye />}
-              </span>
-            </div>
-            <div className="relative">
-              <input
-                type={showNew ? "text" : "password"}
-                placeholder="New Password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-4 py-2 border rounded pr-10"
-              />
-              <span
-                onClick={() => setShowNew(!showNew)}
-                className="absolute right-3 top-2.5 text-gray-500 cursor-pointer"
-              >
-                {showNew ? <FaEyeSlash /> : <FaEye />}
-              </span>
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={handlePasswordChange}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => {
-                  setShowChangePassword(false);
-                  setOldPassword('');
-                  setNewPassword('');
-                }}
-                className="text-sm text-gray-600 hover:text-gray-800"
-              >
-                Cancel
-              </button>
-            </div>
+      {!showChangePassword ? (
+        <button
+          onClick={() => setShowChangePassword(true)}
+          className="text-sm text-teal-600 hover:text-teal-800 flex items-center gap-2"
+        >
+          <FaKey /> Change Password
+        </button>
+      ) : (
+        <div className="space-y-4">
+          <div className="relative">
+            <input
+              type={showOld ? 'text' : 'password'}
+              placeholder="Current Password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              className="w-full px-4 py-2 border rounded pr-10 focus:outline-teal-600"
+            />
+            <span
+              onClick={() => setShowOld(!showOld)}
+              className="absolute right-3 top-2.5 text-gray-500 cursor-pointer"
+            >
+              {showOld ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
-        )}
-      </div>
+          <div className="relative">
+            <input
+              type={showNew ? 'text' : 'password'}
+              placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full px-4 py-2 border rounded pr-10 focus:outline-teal-600"
+            />
+            <span
+              onClick={() => setShowNew(!showNew)}
+              className="absolute right-3 top-2.5 text-gray-500 cursor-pointer"
+            >
+              {showNew ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={handlePasswordChange}
+              className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded"
+            >
+              Save
+            </button>
+            <button
+              onClick={() => {
+                setShowChangePassword(false);
+                setOldPassword('');
+                setNewPassword('');
+              }}
+              className="text-sm text-gray-600 hover:text-gray-800"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

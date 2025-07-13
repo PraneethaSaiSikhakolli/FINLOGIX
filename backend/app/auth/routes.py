@@ -46,6 +46,14 @@ def login():
     set_refresh_cookies(response, refresh_token)
     return response
 
+@auth_bp.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.get_json()
+    email = data.get('email')
+    if not email:
+        return jsonify({'message': 'Email is required'}), 400
+    # Logic to send reset email or token
+    return jsonify({'message': 'Reset link sent'}), 200
 
 @auth_bp.route('/profile', methods=['GET'])
 @jwt_required()

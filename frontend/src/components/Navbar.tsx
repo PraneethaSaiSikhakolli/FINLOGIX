@@ -1,106 +1,62 @@
-// src/components/Navbar.tsx
-import { useAuth } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
-import {
-  FaSignOutAlt,
-  FaUserShield,
-  FaHome,
-  FaUserCircle
-} from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { FaHome, FaUserCircle, FaSignOutAlt, FaTools } from 'react-icons/fa';
+import { jwtDecode } from 'jwt-decode';
 
 const Navbar = () => {
-  const { logout, currentUser } = useAuth();
   const navigate = useNavigate();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
+    document.body.classList.remove('dark');
+    const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        console.log("🔍 Decoded Role:", decoded.role);
+        setIsAdmin(decoded?.role?.toLowerCase() === 'admin');
+      } catch (err) {
+        console.error('Invalid token');
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    sessionStorage.removeItem('accessToken');
+    navigate('/login');
+  };
+
   return (
-    <nav className="w-full bg-white border-b border-gray-200 px-4 py-3 shadow-sm flex justify-between items-center">
-      <div
-        className="text-2xl font-bold text-indigo-600 cursor-pointer hover:text-indigo-700 transition"
-        onClick={() => navigate('/dashboard')}
-      >
-        FinLogix
+    <nav className="fixed top-0 left-0 right-0 bg-white text-black shadow-md z-50 h-16 flex items-center justify-between px-4 sm:px-6 md:px-10">
+      <div className="text-2xl font-bold text-teal-700">
+        <Link to="/dashboard" className="hover:opacity-80 transition">FinLogix</Link>
       </div>
 
-      <div className="flex items-center gap-4 relative" ref={dropdownRef}>
-        <button
-          onClick={() => navigate('/')}
-          className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-indigo-600 transition"
-        >
-          <FaHome className="text-sm" />
-          Home
-        </button>
+      <div className="flex items-center space-x-4 sm:space-x-6 text-sm font-medium">
+        <Link to="/" className="flex items-center gap-1 hover:text-teal-600 transition">
+          <FaHome className="text-base" />
+          <span className="hidden sm:inline">Home</span>
+        </Link>
 
-        {currentUser?.role === 'admin' && (
-          <button
-            onClick={() => navigate('/admin')}
-            className="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-indigo-600 transition"
-          >
-            <FaUserShield className="text-sm" />
-            Admin Panel
-          </button>
-        )}
-        {currentUser && (
-          <div className="hidden sm:flex items-center gap-2 text-sm text-gray-700">
-            <FaUserCircle className="text-lg text-indigo-500" />
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="hidden sm:flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-indigo-600 transition"
-                >
-                  Profile
-                </button>
-            {currentUser.email}
-          </div>
+        <Link to="/profile" className="flex items-center gap-1 hover:text-teal-600 transition">
+          <FaUserCircle className="text-base" />
+          <span className="hidden sm:inline">Profile</span>
+        </Link>
+
+        {isAdmin && (
+          <Link to="/admin" className="flex items-center gap-1 hover:text-teal-600 transition">
+            <FaTools className="text-base" />
+            <span className="hidden sm:inline">Admin Panel</span>
+          </Link>
         )}
 
         <button
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-          className="sm:hidden focus:outline-none"
+          onClick={handleLogout}
+          className="flex items-center gap-1 bg-teal-600 hover:bg-teal-700 text-white px-3 sm:px-4 py-1.5 rounded-full transition text-xs sm:text-sm"
         >
-          <FaUserCircle className="text-2xl text-indigo-500" />
-        </button>
-
-        {dropdownOpen && (
-          <div className="absolute right-0 mt-12 w-40 bg-white text-gray-800 rounded shadow-lg z-50">
-            <div
-              onClick={() => {
-                navigate('/profile');
-                setDropdownOpen(false);
-              }}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
-            >
-              Profile
-            </div>
-            <div
-              onClick={() => {
-                logout();
-                setDropdownOpen(false);
-              }}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm flex items-center gap-1"
-            >
-              <FaSignOutAlt className="text-xs" />
-              Logout
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={logout}
-          className="hidden sm:inline bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded text-sm transition"
-        >
-          Logout
+          <FaSignOutAlt className="text-base" />
+          <span className="hidden sm:inline">Logout</span>
         </button>
       </div>
     </nav>

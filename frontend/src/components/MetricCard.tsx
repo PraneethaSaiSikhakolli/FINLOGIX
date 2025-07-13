@@ -1,52 +1,27 @@
-// src/components/MetricCard.tsx
-import type { FC, ReactNode } from 'react';
+// Refreshed MetricCard.tsx with animations and teal palette
+
+import React from 'react';
+import { motion } from 'framer-motion';
 
 interface MetricCardProps {
   title: string;
   value: number;
-  icon?: ReactNode;
-  color?: 'green' | 'red' | 'blue' | 'gray';
+  icon: React.ReactNode;
+  color?: string;
 }
 
-const colorMap = {
-  green: {
-    bg: 'bg-green-100 dark:bg-green-600',
-    text: 'text-green-600 dark:text-white',
-    icon: 'text-green-500 dark:text-white',
-  },
-  red: {
-    bg: 'bg-red-100 dark:bg-red-600',
-    text: 'text-red-600 dark:text-white',
-    icon: 'text-red-500 dark:text-white',
-  },
-  blue: {
-    bg: 'bg-blue-100 dark:bg-blue-600',
-    text: 'text-blue-600 dark:text-white',
-    icon: 'text-blue-500 dark:text-white',
-  },
-  gray: {
-    bg: 'bg-gray-100 dark:bg-zinc-600',
-    text: 'text-gray-800 dark:text-white',
-    icon: 'text-gray-500 dark:text-white',
-  },
-};
-
-const MetricCard: FC<MetricCardProps> = ({
-  title,
-  value,
-  icon,
-  color = 'gray',
-}) => {
-  const styles = colorMap[color];
-
+const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, color = 'gray' }) => {
   return (
-    <div className={`p-6 rounded-lg shadow-md flex items-center justify-between ${styles.bg}`}>
-      <div>
-        <h2 className={`text-lg font-semibold ${styles.text}`}>{title}</h2>
-        <p className={`text-3xl mt-2 font-bold ${styles.text}`}>₹{value.toFixed(2)}</p>
-      </div>
-      {icon && <div className={`text-4xl ${styles.icon}`}>{icon}</div>}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="bg-white p-5 rounded-2xl shadow-md flex flex-col items-center justify-center gap-2 hover:shadow-xl transition"
+    >
+      <div className={`text-${color}-600 text-2xl`}>{icon}</div>
+      <h3 className="text-sm text-gray-500 font-medium">{title}</h3>
+      <p className="text-xl font-bold text-gray-800">₹{value}</p>
+    </motion.div>
   );
 };
 
