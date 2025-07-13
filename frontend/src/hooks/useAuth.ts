@@ -20,7 +20,7 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
-  // ⏳ Decode token on mount
+  // Decode token on mount
   useEffect(() => {
     const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
     if (token) {

@@ -20,9 +20,6 @@ API.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log('%c🔐 [Request] Token attached:', 'color:green;', token);
-  } else {
-    console.warn('%c⚠️ [Request] No token found in storage', 'color:orange;');
   }
   return config;
 });

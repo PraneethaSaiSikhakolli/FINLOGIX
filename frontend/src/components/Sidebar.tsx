@@ -22,7 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onTabChange }) => {
     <motion.aside
       animate={{ width: isOpen ? 220 : 60 }}
       transition={{ duration: 0.3 }}
-      className="bg-teal-800 text-white h-screen shadow-lg flex flex-col py-6 px-3 fixed top-16 left-0 z-20"
+      className="bg-teal-800 text-white h-screen shadow-lg flex flex-col py-6 px-3"
     >
       <button
         className="text-white text-xl self-end mb-6 md:hidden"
