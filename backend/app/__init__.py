@@ -20,7 +20,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
+    CORS(app, supports_credentials=True, origins=["http://localhost:5173","https://finlogix-three.vercel.app"])
     db.init_app(app)
     migrate.init_app(app, db)
     socketio.init_app(app)
